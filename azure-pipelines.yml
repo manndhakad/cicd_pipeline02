@@ -3,14 +3,18 @@ trigger: none
 pool: infra_pipeline02
 
 stages:
-  - stage: 
+  - stage: TerraformPlan
+    displayName: Terraform init plan 
     jobs:
-      - job: 
+      - job: Terraform_IVP
+        displayName: Terraform IVP
         steps:
           - task: TerraformInstaller@1
+            displayName: Terraform install
             inputs:
               terraformVersion: 'latest'
           - task: TerraformTask@5
+            displayName: Terraform init
             inputs:
               provider: 'azurerm'
               command: 'init'
@@ -19,11 +23,13 @@ stages:
               backendAzureRmContainerName: 'pipeline'
               backendAzureRmKey: 'terraform.tfstate'
           - task: TerraformTask@5
+            displayName: Terraform Plan
             inputs:
               provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: 'infra_pipeline02'
-  - stage: 
+  - stage: TerraformApply
+    displayName: Terraform Apply
     jobs:
       - job: 
         steps:
