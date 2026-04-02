@@ -13,6 +13,7 @@ stages:
             displayName: Terraform install
             inputs:
               terraformVersion: 'latest'
+
           - task: TerraformTask@5
             displayName: Terraform init
             inputs:
@@ -22,28 +23,37 @@ stages:
               backendAzureRmStorageAccountName: 'stpipeline00022'
               backendAzureRmContainerName: 'pipeline'
               backendAzureRmKey: 'terraform.tfstate'
+
           - task: TerraformTask@5
             displayName: Terraform Plan
             inputs:
               provider: 'azurerm'
               command: 'plan'
               environmentServiceNameAzureRM: 'infra_pipeline02'
+
   - stage: TerraformApply
     displayName: Terraform Apply
+    dependsOn: TerraformPlan
     jobs:
-      - job: 
+      - job: Terraform_Apply
+        displayName: Terraform Apply Job
         steps:
           - task: TerraformInstaller@1
             inputs:
               terraformVersion: 'latest'
+
           - task: TerraformTask@5
+            displayName: Terraform init
             inputs:
               provider: 'azurerm'
               command: 'init'
+              backendServiceArm: 'infra_pipeline02'
               backendAzureRmStorageAccountName: 'stpipeline00022'
               backendAzureRmContainerName: 'pipeline'
               backendAzureRmKey: 'terraform.tfstate'
+
           - task: TerraformTask@5
+            displayName: Terraform apply
             inputs:
               provider: 'azurerm'
               command: 'apply'
